@@ -1,5 +1,11 @@
 {% from "rsyslog/map.jinja" import rsyslog with context %}
 
+rsyslog_remote_logging_selinux:
+  selinux.boolean:
+    - name: nis_enabled
+    - value: True
+    - persist: True
+
 rsyslog:
   pkg.installed:
     - name: {{ rsyslog.package }}
@@ -13,6 +19,7 @@ rsyslog:
     - enable: True
     - name: {{ rsyslog.service }}
     - require:
+      - selinux: rsyslog_remote_logging_selinux
       - pkg: {{ rsyslog.package }}
     - watch: 
       - file: {{ rsyslog.config }}
