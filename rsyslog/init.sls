@@ -1,10 +1,12 @@
 {% from "rsyslog/map.jinja" import rsyslog with context %}
 
+{% if grains.selinux.enabled == True %}
 rsyslog_remote_logging_selinux:
   selinux.boolean:
     - name: nis_enabled
     - value: True
     - persist: True
+{% endif %}
 
 rsyslog:
   pkg.installed:
@@ -19,9 +21,11 @@ rsyslog:
     - enable: True
     - name: {{ rsyslog.service }}
     - require:
+      {% if grains.selinux.enabled == True %}
       - selinux: rsyslog_remote_logging_selinux
+      {% endif %}
       - pkg: {{ rsyslog.package }}
-    - watch: 
+    - watch:
       - file: {{ rsyslog.config }}
 
 workdirectory:
